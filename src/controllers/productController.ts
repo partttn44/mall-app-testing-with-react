@@ -1,6 +1,6 @@
 // src/controllers/cartController.ts
 import type { Product } from "../models/ProductModel";
-import { getAllCart, getAllCategory } from "../services/cartService";
+import { getAllCart, getAllCategory, getById } from "../services/cartService";
 
 // controller function ที่ห่อ service อีกที
 export async function getAllProducts(): Promise<Product[]> {
@@ -8,6 +8,17 @@ export async function getAllProducts(): Promise<Product[]> {
     const products = await getAllCart();
     // 👉 ถ้ามี logic เพิ่ม เช่น filter, map, validate ใส่ตรงนี้
     return products;
+  } catch (error) {
+    console.error("Error in cartController:", error);
+    throw error;
+  }
+}
+
+export async function getProductById(id: number): Promise<Product> {
+  try {
+    const product = await getById(id);
+    // 👉 ถ้ามี logic เพิ่ม เช่น filter, map, validate ใส่ตรงนี้
+    return product;
   } catch (error) {
     console.error("Error in cartController:", error);
     throw error;

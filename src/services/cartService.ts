@@ -12,6 +12,17 @@ export const getAllCart = async (): Promise<Product[]> => {
   return data;
 };
 
+export const getById = async (id: number): Promise<Product> => {
+  const response = await fetch(`https://fakestoreapi.com/products/${id}`);
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch product");
+  }
+
+  const data: Product = await response.json();
+  return data;
+};
+
 export const getAllCategory = async (): Promise<string[]> => {
   const response = await fetch("https://fakestoreapi.com/products");
 

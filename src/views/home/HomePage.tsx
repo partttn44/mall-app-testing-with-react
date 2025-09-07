@@ -6,6 +6,7 @@ import {
   getCategories,
 } from "../../controllers/productController";
 import type { Product } from "../../models/ProductModel";
+import { useNavigate } from "react-router-dom";
 
 const HomePage: React.FC = () => {
   const [products, setCart] = useState<Product[]>([]);
@@ -22,6 +23,12 @@ const HomePage: React.FC = () => {
       .catch((err) => console.log(err))
       .finally(() => setLoading(false));
   }, []);
+
+  const navigate = useNavigate();
+
+  const goToProductDetail = (id: number) => {
+    navigate("/product", { state: { productId: id } });
+  };
 
   if (loading)
     return (
@@ -44,7 +51,8 @@ const HomePage: React.FC = () => {
             {products.map((item) => (
               <div
                 key={item.id}
-                className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow aspect-[3/3.5] flex flex-col "
+                className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow aspect-[3/3.5] flex flex-col"
+                onClick={() => goToProductDetail(item.id)}
               >
                 <img
                   src={item.image}
