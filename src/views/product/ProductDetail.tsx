@@ -1,24 +1,44 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { getProductById } from "../../controllers/productController";
 import type { Product } from "../../models/ProductModel";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCartShopping, faCoffee } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCartShopping,
+  faCreditCard,
+} from "@fortawesome/free-solid-svg-icons";
+import { addToCart, getCart } from "../../utils/cartStorage";
 
 const ProductDetailPage: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { productId } = location.state as { productId: number };
 
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
+  const [cartCount, setCartCount] = useState(0);
 
   useEffect(() => {
     if (!productId) return;
+
     getProductById(productId)
-      .then(setProduct)
-      .catch((err) => console.error(err))
+      .then((p) => setProduct(p))
+      .catch(console.error)
       .finally(() => setLoading(false));
+
+    // โหลดจำนวนสินค้าใน cart ปัจจุบัน
+    setCartCount(getCart().length);
   }, [productId]);
+
+  const handleAddCart = () => {
+    if (!product) return;
+    addToCart(product);
+    setCartCount(getCart().length);
+  };
+
+  const handleCheckout = () => {
+    navigate("/cart"); // หรือเปลี่ยนเป็นหน้าชำระเงินที่คุณสร้าง
+  };
 
   if (loading)
     return (
@@ -57,10 +77,26 @@ const ProductDetailPage: React.FC = () => {
           </p>
           <p className="text-gray-700 mb-4">{product.description}</p>
           <p className="italic text-gray-500">Category: {product.category}</p>
-          <div className="mt-4">
-            <button className="px-6 py-2 bg-amber-500 text-white font-semibold rounded-md hover:bg-amber-600">
-              <FontAwesomeIcon icon={faCartShopping} />
+
+          <div className="mt-4 flex gap-4">
+            {/* Add to Cart */}
+            <button
+              onClick={handleAddCart}
+              className="flex items-center px-6 py-2 bg-amber-500 text-white font-semibold rounded-md hover:bg-amber-600"
+            >
+              <FontAwesomeIcon icon={faCartShopping} className="mr-2" />
               Add Cart
+              {cartCount > 0 && (
+                <span className="ml-2 text-sm">({cartCount})</span>
+              )}
+            </button>
+
+            <button
+              onClick={handleCheckout}
+              className="flex items-center px-6 py-2 bg-green-500 text-white font-semibold rounded-md hover:bg-green-600"
+            >
+              <FontAwesomeIcon icon={faCreditCard} className="mr-2" />
+              Checkout
             </button>
           </div>
         </div>
